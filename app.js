@@ -16,25 +16,28 @@ const CONFIG = {
 /* ─────────────────────────────────────────── */
 
 /* ─── DOM References ─── */
-const stars         = document.querySelectorAll('.star-btn');
-const generateBtn   = document.getElementById('generateBtn');
-const reviewSection = document.getElementById('reviewSection');
-const reviewText    = document.getElementById('reviewText');
-const copyBtn       = document.getElementById('copyBtn');
-const proceedBtn    = document.getElementById('proceedBtn');
+const stars           = document.querySelectorAll('.star-btn');
+const generateBtn     = document.getElementById('generateBtn');
+const reviewSection   = document.getElementById('reviewSection');
+const reviewText      = document.getElementById('reviewText');
+const copyBtn         = document.getElementById('copyBtn');
+const proceedBtn      = document.getElementById('proceedBtn');
 const feedbackSection = document.getElementById('feedbackSection');
-const feedbackText  = document.getElementById('feedbackText');
-const sendWhatsApp  = document.getElementById('sendWhatsApp');
+const feedbackText    = document.getElementById('feedbackText');
+const sendWhatsApp    = document.getElementById('sendWhatsApp');
 const loadingSkeleton = document.getElementById('loadingSkeleton');
-const ratingLabel   = document.getElementById('ratingLabel');
-const toastContainer = document.getElementById('toastContainer');
-const shopNameEl    = document.getElementById('shopName');
-const ownerNameEl   = document.getElementById('ownerName');
-const ownerNameEl2  = document.getElementById('ownerName2');
+const ratingLabel     = document.getElementById('ratingLabel');
+const toastContainer  = document.getElementById('toastContainer');
+const shopNameEl      = document.getElementById('shopName');
+const ownerNameEl     = document.getElementById('ownerName');
+const ownerNameEl2    = document.getElementById('ownerName2');
+const categorySection = document.getElementById('categorySection');
+const catChips        = document.querySelectorAll('.cat-chip');
 
 /* ─── State ─── */
-let selectedRating = 0;
-let generatedReview = '';
+let selectedRating   = 0;
+let selectedCategory = null;   // { category, label }
+let generatedReview  = '';
 
 /* ─── Init ─── */
 function init() {
@@ -54,6 +57,11 @@ function init() {
   copyBtn?.addEventListener('click', handleCopy);
   proceedBtn?.addEventListener('click', handleProceed);
   sendWhatsApp?.addEventListener('click', handleWhatsApp);
+
+  // Category chip clicks
+  catChips.forEach((chip) => {
+    chip.addEventListener('click', () => handleCategoryClick(chip));
+  });
 }
 
 /* ─── Star Rating ─── */
@@ -61,10 +69,16 @@ function handleStarClick(rating) {
   selectedRating = rating;
   highlightStars(rating);
   updateRatingLabel(rating);
-  generateBtn.disabled = false;
-  generateBtn.classList.add('active');
 
-  // Reset sections
+  // Show category picker, reset previously selected category
+  categorySection.hidden = false;
+  resetCategorySelection();
+
+  // Require a category before allowing generate
+  generateBtn.disabled = true;
+  generateBtn.classList.remove('active');
+
+  // Reset output sections
   reviewSection.hidden = true;
   feedbackSection.hidden = true;
   generatedReview = '';
@@ -84,6 +98,39 @@ function updateRatingLabel(rating) {
   ratingLabel.className = `rating-label rating-${rating}`;
 }
 
+/* ─── Category Selection ─── */
+function handleCategoryClick(chip) {
+  // Deselect all chips
+  catChips.forEach((c) => {
+    c.classList.remove('selected');
+    c.setAttribute('aria-pressed', 'false');
+  });
+
+  // Select clicked chip
+  chip.classList.add('selected');
+  chip.setAttribute('aria-pressed', 'true');
+
+  selectedCategory = {
+    category: chip.dataset.category,
+    label: chip.dataset.label,
+  };
+
+  // Now unlock the Generate button
+  generateBtn.disabled = false;
+  generateBtn.classList.add('active');
+
+  // Scroll generate button into view smoothly
+  generateBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function resetCategorySelection() {
+  selectedCategory = null;
+  catChips.forEach((c) => {
+    c.classList.remove('selected');
+    c.setAttribute('aria-pressed', 'false');
+  });
+}
+
 /* ─── Review Generation ─── */
 async function handleGenerate() {
   if (!selectedRating) return;
@@ -101,8 +148,9 @@ async function handleGenerate() {
       loadingSkeleton.hidden = true;
       showReviewSection(generatedReview);
     } else {
-      // Private feedback flow — pre-fill with a soft template
-      generatedReview = `Hi ${CONFIG.ownerName}, I visited ${CONFIG.shopName} and wanted to share some feedback privately. I gave ${selectedRating} star(s) because: `;
+      // Private feedback flow — pre-fill with a soft template including category
+      const catInfo = selectedCategory ? ` regarding my ${selectedCategory.label}` : '';
+      generatedReview = `Hi ${CONFIG.ownerName}, I visited ${CONFIG.shopName}${catInfo} and wanted to share some feedback privately. I gave ${selectedRating} star(s) because: `;
       loadingSkeleton.hidden = true;
       showFeedbackSection(generatedReview);
     }
@@ -122,16 +170,18 @@ async function handleGenerate() {
 }
 
 async function generateAIReview() {
+  const catLabel = selectedCategory?.label || 'mobile phone';
+
   // 1. Try Chrome built-in AI (Gemini Nano)
   if (typeof window !== 'undefined' && window.LanguageModel) {
     try {
       const canCreate = await window.LanguageModel.availability();
       if (canCreate === 'available' || canCreate === 'downloading') {
         const session = await window.LanguageModel.create({
-          systemPrompt: `You are an expert review writer. Write genuine, SEO-optimized Google Maps reviews for a mobile phone repair shop called "${CONFIG.shopName}" in ${CONFIG.location}. The owner, ${CONFIG.ownerName}, personally repairs every device. Reviews should sound natural, be 80-120 words, mention the location and owner name naturally, use relevant keywords (mobile repair, phone fix, screen replacement, etc.), and end positively.`
+          systemPrompt: `You are an expert review writer. Write genuine, SEO-optimized Google Maps reviews for a mobile phone repair shop called "${CONFIG.shopName}" in ${CONFIG.location}. The owner, ${CONFIG.ownerName}, personally repairs every device. Reviews should sound natural, be 80-120 words, mention the location and owner name naturally, use relevant keywords, and end positively.`
         });
         const review = await session.prompt(
-          `Write a unique 5-star Google Maps review for ${CONFIG.shopName}. Make it sound like a real happy customer. Vary the scenario (screen crack, battery, water damage, charging port, etc.). Do NOT include star emojis at the start. Write only the review text, nothing else.`
+          `Write a unique 5-star Google Maps review for ${CONFIG.shopName}. The customer had a "${catLabel}" repaired. Make it sound like a real happy customer, naturally mentioning the type of repair. Do NOT include star emojis at the start. Write only the review text, nothing else.`
         );
         session.destroy();
         return review.trim();
@@ -144,7 +194,7 @@ async function generateAIReview() {
   // 2. Try Gemini API (cloud, any browser)
   if (CONFIG.geminiApiKey && CONFIG.geminiApiKey !== 'YOUR_GEMINI_API_KEY') {
     try {
-      const prompt = `Write a unique, genuine-sounding 5-star Google Maps review for a mobile phone repair shop called "${CONFIG.shopName}" located in ${CONFIG.location}. The owner's name is ${CONFIG.ownerName} who personally repairs every device. The review should be 80-120 words, sound like a real happy customer, include relevant keywords naturally (mobile repair, phone screen, battery, quick service, etc.), mention the location and owner's name, and end with a strong recommendation. Write only the review text, no intro, no star symbols at the start.`;
+      const prompt = `Write a unique, genuine-sounding 5-star Google Maps review for a mobile phone repair shop called "${CONFIG.shopName}" located in ${CONFIG.location}. The owner's name is ${CONFIG.ownerName} who personally repairs every device. The customer came in for: "${catLabel}". Naturally mention this repair type in the review. The review should be 80-120 words, sound like a real happy customer, include relevant SEO keywords (mobile repair, quick service, etc.), mention the location and owner's name, and end with a strong recommendation. Write only the review text, no intro, no star symbols at the start.`;
 
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${CONFIG.geminiApiKey}`,
@@ -168,7 +218,12 @@ async function generateAIReview() {
   }
 
   // 3. Static template fallback
-  return getRandomReview({ shop: CONFIG.shopName, owner: CONFIG.ownerName, location: CONFIG.location });
+  return getRandomReview({
+    shop: CONFIG.shopName,
+    owner: CONFIG.ownerName,
+    location: CONFIG.location,
+    category: selectedCategory?.category,
+  });
 }
 
 /* ─── UI Sections ─── */

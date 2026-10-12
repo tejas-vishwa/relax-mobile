@@ -89,6 +89,40 @@
           <p class="rating-label" id="ratingLabel" aria-live="polite"></p>
         </section>
 
+        <!-- Repair Category Selector -->
+        <section class="category-section" id="categorySection" hidden aria-label="Select repair type">
+          <p class="category-prompt">What did we repair for you?</p>
+          <div class="category-grid" role="group" aria-label="Repair categories">
+            <button class="cat-chip" data-category="battery" data-label="Battery Issue" aria-pressed="false">
+              🔋 Battery Issue
+            </button>
+            <button class="cat-chip" data-category="display" data-label="Display / Screen" aria-pressed="false">
+              📱 Display Change
+            </button>
+            <button class="cat-chip" data-category="speaker" data-label="Speaker &amp; Mic Issue" aria-pressed="false">
+              🔊 Speaker &amp; Mic
+            </button>
+            <button class="cat-chip" data-category="software" data-label="Software Issue" aria-pressed="false">
+              💻 Software Issue
+            </button>
+            <button class="cat-chip" data-category="charging" data-label="Charging Port" aria-pressed="false">
+              ⚡ Charging Port
+            </button>
+            <button class="cat-chip" data-category="camera" data-label="Camera Repair" aria-pressed="false">
+              📷 Camera Repair
+            </button>
+            <button class="cat-chip" data-category="water" data-label="Water Damage" aria-pressed="false">
+              💧 Water Damage
+            </button>
+            <button class="cat-chip" data-category="back" data-label="Back Glass / Body" aria-pressed="false">
+              🪟 Back Glass
+            </button>
+            <button class="cat-chip" data-category="other" data-label="Other Repair" aria-pressed="false">
+              🔧 Other Repair
+            </button>
+          </div>
+        </section>
+
         <!-- Generate Button -->
         <button class="btn-generate" id="generateBtn" disabled aria-disabled="true">
           ✨ Generate My Review

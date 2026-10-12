@@ -1,66 +1,82 @@
 /**
  * reviews.js
- * A curated pool of SEO-friendly review templates for a mobile repair shop.
- * Templates use {shop}, {owner}, {location} as placeholders — filled at runtime.
- * Designed to sound natural, vary in tone/length, and rank for local repair keywords.
+ * Category-aware pool of SEO-friendly review templates.
+ * Each category key maps to 3+ unique review templates.
+ * Templates use {shop}, {owner}, {location} as placeholders.
  */
 
-const REVIEW_TEMPLATES = [
-  // ── Long-form, high keyword density ──
-  `Absolutely brilliant service at {shop} in {location}! {owner} personally handled my phone repair and fixed it within the hour. The screen replacement was done with original-quality parts and looks brand new. If you're searching for a reliable mobile repair shop near {location}, this is THE place. Highly recommend! ⭐⭐⭐⭐⭐`,
+const REVIEW_POOL = {
+  battery: [
+    `My phone's battery was draining within hours — {owner} at {shop} replaced it perfectly and now it lasts all day! Transparent pricing, same-day service. Best mobile repair shop in {location}. Highly recommend!`,
+    `Took my phone to {shop} in {location} for a battery replacement. {owner} had it done in 30 minutes using a great quality battery. The phone feels brand new again. Honest, fast, and affordable — 5 stars without hesitation!`,
+    `{shop} in {location} is incredible! {owner} replaced my dead battery quickly and even tested it before handing it back. The phone charges perfectly and holds charge all day. Best mobile technician in {location}!`,
+  ],
+  display: [
+    `Cracked my screen badly and was devastated. Walked into {shop} in {location} and {owner} fixed it perfectly — the display looks factory fresh! Completed in under an hour. Brilliant service, fair pricing. Fully recommended!`,
+    `{owner} at {shop} replaced my shattered display with precision and care. The screen quality is excellent, touch response is perfect. If you need a screen repair in {location}, this is your place. 10/10!`,
+    `Dropped my phone and shattered the screen. {shop} in {location} saved the day — {owner} repaired it same day and it looks completely new. Exceptional quality work and very reasonable pricing!`,
+  ],
+  speaker: [
+    `My phone's speaker and microphone stopped working. {owner} at {shop} in {location} diagnosed and fixed both issues quickly. Calls are crystal clear now! Great service, honest pricing. Highly recommend for any audio issue!`,
+    `Visited {shop} for a speaker issue — {owner} cleaned and repaired it properly. Sound quality is back to perfect. Quick, professional service in {location}. This is my go-to repair shop from now on!`,
+    `{owner} at {shop} fixed my phone's mic issue that two other shops couldn't solve. He took time to properly diagnose the problem. Sound is perfect again. True expert mobile technician in {location}!`,
+  ],
+  software: [
+    `My phone was completely frozen and unresponsive. {owner} at {shop} in {location} resolved the software issue quickly without losing my data. Knowledgeable, professional, and very affordable. Highly recommended!`,
+    `{shop} in {location} is amazing! {owner} fixed my software problem — phone was stuck in a boot loop — within the hour. All my data was safe. Brilliant technical expertise and excellent service!`,
+    `Phone was running extremely slow and crashing. {owner} at {shop} sorted the software issue professionally and now it runs like new. Best tech support in {location}. Very satisfied!`,
+  ],
+  charging: [
+    `My phone wouldn't charge at all. {owner} at {shop} in {location} replaced the charging port and it works perfectly now! Quick 40-minute fix, very reasonable price. Brilliant service — I'm so relieved!`,
+    `Went to {shop} with a loose charging port issue. {owner} fixed it quickly and efficiently. Phone charges perfectly now. No upselling, just honest repair expertise in {location}. Strongly recommended!`,
+    `{owner} at {shop} repaired my charging port that had been damaged for weeks. Diagnosed it accurately, fixed it fast. Superb service and very fair pricing in {location}. Will definitely return!`,
+  ],
+  camera: [
+    `Camera on my phone was blurry and the rear lens was cracked. {owner} at {shop} in {location} replaced it perfectly — photos look stunning again. Quick, precise repair work. Excellent service!`,
+    `Took my phone to {shop} in {location} for a camera repair. {owner} fixed both front and rear cameras the same day. The image quality is flawless. Best mobile repair service I've experienced!`,
+    `{shop} in {location} is fantastic! {owner} repaired my phone camera professionally — no more blurry shots. Great craftsmanship, honest pricing. Highly recommend for any camera-related repair!`,
+  ],
+  water: [
+    `My phone fell in water and I thought it was gone forever! Rushed to {shop} and {owner} immediately began water damage treatment. Two days later my phone was completely revived. Exceptional expertise in {location}!`,
+    `{owner} at {shop} in {location} worked miracles on my water-damaged phone. He's thorough, patient, and incredibly skilled. So grateful — I thought I'd lost everything. Best mobile technician around!`,
+    `Water damaged my phone and {shop} was recommended to me. {owner} treated it professionally and recovered it fully. Truly impressive skill. If you have a water damage emergency in {location}, go here immediately!`,
+  ],
+  back: [
+    `Dropped my phone and shattered the back glass. {owner} at {shop} in {location} replaced it perfectly — looks completely factory fresh. Amazing attention to detail and very reasonable price!`,
+    `{shop} in {location} replaced my cracked back panel perfectly. {owner} matched the colour exactly and the finish is flawless. Quick, professional, affordable. Really happy with the result!`,
+    `Needed a back glass replacement and {owner} at {shop} delivered perfect results. The phone looks brand new. Great workmanship and excellent value in {location}. Highly recommend!`,
+  ],
+  other: [
+    `Outstanding mobile repair service at {shop} in {location}! {owner} diagnosed my phone issue accurately and fixed it the same day. Professional, honest, and very reasonably priced. Will definitely return!`,
+    `{shop} in {location} is a gem! {owner} is skilled, friendly, and genuinely cares about doing a perfect job. My phone works flawlessly again. Go-to repair shop in {location} — highly recommended!`,
+    `Brilliant experience at {shop}! {owner} repaired my phone with expertise and care. Transparent about costs, no hidden charges. Fast turnaround. Best mobile repair in {location} without a doubt!`,
+  ],
+};
 
-  `I had a cracked screen and a dead battery on my phone. Took it to {shop} in {location} and {owner} fixed both issues same day! The pricing was transparent, no hidden charges. Best mobile repair experience I've ever had. Will definitely return for any future device issues.`,
-
-  `Outstanding mobile repair service by {owner} at {shop}! My phone had water damage and I thought it was gone forever, but {owner} revived it completely. The attention to detail and expertise shown was incredible. Trusted mobile technician in {location} — highly recommended for any smartphone or tablet repair!`,
-
-  `{shop} in {location} is a gem! Walked in with a shattered display and walked out 45 minutes later with a perfectly working phone. {owner} is skilled, honest, and very reasonably priced. No upselling, just genuine repair expertise. This is my go-to mobile repair shop from now on.`,
-
-  // ── Medium-form, conversational ──
-  `Really impressed with the quick turnaround at {shop}. {owner} diagnosed the charging port issue in minutes and had it fixed in under 30 minutes. Professional, friendly and affordable. 5 stars without hesitation!`,
-
-  `Best phone repair shop in {location}! {owner} repaired my Samsung with precision and care. He explained exactly what was wrong and what he'd do to fix it. No surprises on the bill. This kind of honest service is rare — absolute 5-star experience.`,
-
-  `I've tried several repair shops before but {shop} is on another level. {owner} personally works on every device, which gives you confidence that your phone is in expert hands. Fixed my iPhone camera and speaker issue perfectly. Strongly recommended!`,
-
-  `Came in with a dead phone and left with a fully working device, all thanks to {owner} at {shop}. Fair prices, fast service, and genuine care for the customer. Don't go anywhere else for mobile repairs in {location}!`,
-
-  `{owner} at {shop} is a true professional. Fixed my phone's broken display and also noticed a loose battery connector — fixed that too at no extra charge. This level of service is why this shop deserves every 5-star review it gets!`,
-
-  // ── Short punchy reviews ──
-  `Quick, affordable, and excellent quality repair at {shop} in {location}. {owner} is the best mobile technician around. 10/10 would recommend to anyone with a broken phone!`,
-
-  `Fixed in 30 minutes, works like new. {owner} at {shop} is amazing. Highly recommended for any mobile repair in {location}!`,
-
-  `{shop} = best mobile repair in {location}. {owner} fixed my phone perfectly. Honest pricing, fast service, great results. Go here!`,
-
-  // ── Specific repair scenarios ──
-  `My phone fell in water and I panicked! Rushed to {shop} and {owner} performed water damage treatment immediately. Two days later my phone was completely fine. Couldn't be more grateful. Exceptional service and genuine expertise in {location}!`,
-
-  `Needed a battery replacement for my old phone. {owner} at {shop} used a genuine-quality battery and the phone now lasts all day again. Service was quick and priced fairly. This is the kind of local business that deserves your support!`,
-
-  `Dropped my phone and shattered the back glass. Went to {shop} in {location} and {owner} replaced it perfectly — looks completely factory fresh. The craftsmanship is top-notch. Very happy with the result!`,
-
-  `{owner} at {shop} repaired my phone's speaker and microphone issue that another shop couldn't fix. He took the time to properly diagnose the problem. Truly an expert technician. If you have a phone problem in {location}, this is the place to go.`,
-
-  `Fantastic experience at {shop}! {owner} is incredibly skilled and takes pride in his work. My phone's charging port was replaced quickly and now charges perfectly. Honest, professional, and affordable — what more could you ask for?`,
-
-  `Visited {shop} after my phone screen went black after a drop. {owner} fixed it the same day. He's thorough, explains the repair clearly, and charges a fair price. One of the best mobile repair shops I've been to in {location}. Fully recommend!`,
+/** Generic pool used when no category is specified */
+const GENERIC_REVIEWS = [
+  `Absolutely brilliant service at {shop} in {location}! {owner} personally handled my phone repair and fixed it within the hour. Original-quality parts, transparent pricing. If you need a reliable mobile repair shop near {location}, this is THE place. Highly recommend! ⭐⭐⭐⭐⭐`,
+  `{shop} in {location} is a gem! {owner} is incredibly skilled and honest. No upselling, just genuine expertise. Fixed my phone perfectly — this is my go-to mobile repair shop from now on.`,
+  `Fantastic experience at {shop}! {owner} is thorough, explains the repair clearly, and charges a fair price. One of the best mobile repair shops in {location}. Fully recommend!`,
 ];
 
 /**
- * Returns a random review template filled with shop, owner, and location details.
- * @param {Object} config
- * @param {string} config.shop - Shop name
- * @param {string} config.owner - Owner name
- * @param {string} config.location - Shop location/area
- * @returns {string} A complete, ready-to-post review
+ * Returns a random review template filled with shop/owner/location details.
+ * Optionally filters to the specified repair category.
+ * @param {Object} opts
+ * @param {string} opts.shop
+ * @param {string} opts.owner
+ * @param {string} opts.location
+ * @param {string} [opts.category]
+ * @returns {string}
  */
-function getRandomReview({ shop, owner, location }) {
-  const template = REVIEW_TEMPLATES[Math.floor(Math.random() * REVIEW_TEMPLATES.length)];
+function getRandomReview({ shop, owner, location, category }) {
+  const pool = (category && REVIEW_POOL[category]) ? REVIEW_POOL[category] : GENERIC_REVIEWS;
+  const template = pool[Math.floor(Math.random() * pool.length)];
   return template
     .replaceAll('{shop}', shop)
     .replaceAll('{owner}', owner)
     .replaceAll('{location}', location);
 }
 
-export { REVIEW_TEMPLATES, getRandomReview };
+export { REVIEW_POOL, getRandomReview };
