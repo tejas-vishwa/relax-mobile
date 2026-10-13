@@ -221,8 +221,7 @@ body {
 
 /* ─── Repair Category Selector ─── */
 .category-section {
-  margin-top: 1.5rem;
-  animation: slideUp 0.35s ease both;
+  margin-bottom: 1.75rem;
 }
 
 .category-prompt {
@@ -282,26 +281,9 @@ body {
   outline-offset: 2px;
 }
 
-/* ─── Generate Button ─── */
+/* ─── Generate Button (auto-generate in place) ─── */
 .btn-generate {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #17a880 0%, #20c997 100%);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 700;
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
-  box-shadow: 0 4px 20px rgba(32, 201, 151, 0.3);
-  letter-spacing: 0.01em;
-  opacity: 0.5;
-  pointer-events: none;
+  display: none;
 }
 
 .btn-generate.active {
@@ -421,6 +403,13 @@ body {
 .btn:hover { transform: translateY(-2px); }
 .btn:active { transform: translateY(0); }
 
+.btn-regen {
+  background: var(--clr-bg-inner);
+  border: 1px solid var(--clr-border-hi);
+  color: var(--clr-primary-l);
+}
+.btn-regen:hover { box-shadow: 0 4px 16px rgba(32, 201, 151, 0.2); }
+
 .btn-copy {
   background: var(--clr-bg-inner);
   border: 1px solid var(--clr-border-hi);
@@ -429,6 +418,7 @@ body {
 .btn-copy:hover { box-shadow: 0 4px 16px rgba(32, 201, 151, 0.2); }
 
 .btn-maps {
+  grid-column: 1 / -1;
   background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
   color: #fff;
   box-shadow: 0 4px 16px rgba(66, 133, 244, 0.3);

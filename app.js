@@ -18,6 +18,7 @@ const CONFIG = {
 /* ─── DOM References ─── */
 const stars           = document.querySelectorAll('.star-btn');
 const generateBtn     = document.getElementById('generateBtn');
+const regenBtn        = document.getElementById('regenBtn');
 const reviewSection   = document.getElementById('reviewSection');
 const reviewText      = document.getElementById('reviewText');
 const copyBtn         = document.getElementById('copyBtn');
@@ -38,6 +39,7 @@ const catChips        = document.querySelectorAll('.cat-chip');
 let selectedRating   = 0;
 let selectedCategory = null;   // { category, label }
 let generatedReview  = '';
+let isGenerating     = false;
 
 /* ─── Init ─── */
 function init() {
@@ -54,6 +56,7 @@ function init() {
   });
 
   generateBtn?.addEventListener('click', handleGenerate);
+  regenBtn?.addEventListener('click', handleGenerate);
   copyBtn?.addEventListener('click', handleCopy);
   proceedBtn?.addEventListener('click', handleProceed);
   sendWhatsApp?.addEventListener('click', handleWhatsApp);
@@ -70,18 +73,12 @@ function handleStarClick(rating) {
   highlightStars(rating);
   updateRatingLabel(rating);
 
-  // Show category picker, reset previously selected category
-  categorySection.hidden = false;
-  resetCategorySelection();
-
-  // Require a category before allowing generate
-  generateBtn.disabled = true;
-  generateBtn.classList.remove('active');
-
-  // Reset output sections
-  reviewSection.hidden = true;
-  feedbackSection.hidden = true;
-  generatedReview = '';
+  // Auto-generate if category is already selected
+  if (selectedCategory) {
+    handleGenerate();
+  } else {
+    ratingLabel.textContent = `${RATING_LABELS[rating]} — Select repair category above`;
+  }
 }
 
 function highlightStars(count) {
@@ -115,12 +112,13 @@ function handleCategoryClick(chip) {
     label: chip.dataset.label,
   };
 
-  // Now unlock the Generate button
-  generateBtn.disabled = false;
-  generateBtn.classList.add('active');
-
-  // Scroll generate button into view smoothly
-  generateBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  // Auto-generate if rating is already selected
+  if (selectedRating > 0) {
+    updateRatingLabel(selectedRating);
+    handleGenerate();
+  } else {
+    ratingLabel.textContent = `Selected: ${selectedCategory.label} — Tap stars to rate 👇`;
+  }
 }
 
 function resetCategorySelection() {
@@ -133,14 +131,24 @@ function resetCategorySelection() {
 
 /* ─── Review Generation ─── */
 async function handleGenerate() {
-  if (!selectedRating) return;
+  if (!selectedRating || !selectedCategory) return;
+  if (isGenerating) return;
+  isGenerating = true;
 
-  // Hide old sections
+  // Hide old sections and show skeleton
   reviewSection.hidden = true;
   feedbackSection.hidden = true;
   loadingSkeleton.hidden = false;
-  generateBtn.disabled = true;
-  generateBtn.textContent = '✨ Generating...';
+  loadingSkeleton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  if (generateBtn) {
+    generateBtn.disabled = true;
+    generateBtn.textContent = '✨ Generating...';
+  }
+  if (regenBtn) {
+    regenBtn.disabled = true;
+    regenBtn.textContent = '🔄 Generating...';
+  }
 
   try {
     if (selectedRating === 5) {
@@ -158,14 +166,26 @@ async function handleGenerate() {
     loadingSkeleton.hidden = true;
     showToast('Generation failed. Using template.', 'error');
     if (selectedRating === 5) {
-      generatedReview = getRandomReview({ shop: CONFIG.shopName, owner: CONFIG.ownerName, location: CONFIG.location });
+      generatedReview = getRandomReview({
+        shop: CONFIG.shopName,
+        owner: CONFIG.ownerName,
+        location: CONFIG.location,
+        category: selectedCategory?.category
+      });
       showReviewSection(generatedReview);
     } else {
       showFeedbackSection(`Hi ${CONFIG.ownerName}, I wanted to share private feedback about ${CONFIG.shopName}. `);
     }
   } finally {
-    generateBtn.disabled = false;
-    generateBtn.textContent = '✨ Generate My Review';
+    isGenerating = false;
+    if (generateBtn) {
+      generateBtn.disabled = false;
+      generateBtn.textContent = '✨ Generate My Review';
+    }
+    if (regenBtn) {
+      regenBtn.disabled = false;
+      regenBtn.textContent = '🔄 Try Another';
+    }
   }
 }
 

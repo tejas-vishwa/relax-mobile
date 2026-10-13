@@ -74,23 +74,8 @@
       <!-- Main Card -->
       <main class="card" role="main">
 
-        <!-- Star Rating -->
-        <section class="rating-section" aria-label="Rate your experience">
-          <p class="rating-prompt">Tap the stars to rate your experience</p>
-
-          <div class="stars-wrapper" role="radiogroup" aria-label="Star rating">
-            <button class="star-btn" data-value="1" role="radio" aria-checked="false" aria-label="1 star">★</button>
-            <button class="star-btn" data-value="2" role="radio" aria-checked="false" aria-label="2 stars">★</button>
-            <button class="star-btn" data-value="3" role="radio" aria-checked="false" aria-label="3 stars">★</button>
-            <button class="star-btn" data-value="4" role="radio" aria-checked="false" aria-label="4 stars">★</button>
-            <button class="star-btn" data-value="5" role="radio" aria-checked="false" aria-label="5 stars">★</button>
-          </div>
-
-          <p class="rating-label" id="ratingLabel" aria-live="polite"></p>
-        </section>
-
         <!-- Repair Category Selector -->
-        <section class="category-section" id="categorySection" hidden aria-label="Select repair type">
+        <section class="category-section" id="categorySection" aria-label="Select repair type">
           <p class="category-prompt">What did we repair for you?</p>
           <div class="category-grid" role="group" aria-label="Repair categories">
             <button class="cat-chip" data-category="battery" data-label="Battery Issue" aria-pressed="false">
@@ -123,8 +108,23 @@
           </div>
         </section>
 
-        <!-- Generate Button -->
-        <button class="btn-generate" id="generateBtn" disabled aria-disabled="true">
+        <!-- Star Rating -->
+        <section class="rating-section" aria-label="Rate your experience">
+          <p class="rating-prompt">Tap the stars to rate your experience</p>
+
+          <div class="stars-wrapper" role="radiogroup" aria-label="Star rating">
+            <button class="star-btn" data-value="1" role="radio" aria-checked="false" aria-label="1 star">★</button>
+            <button class="star-btn" data-value="2" role="radio" aria-checked="false" aria-label="2 stars">★</button>
+            <button class="star-btn" data-value="3" role="radio" aria-checked="false" aria-label="3 stars">★</button>
+            <button class="star-btn" data-value="4" role="radio" aria-checked="false" aria-label="4 stars">★</button>
+            <button class="star-btn" data-value="5" role="radio" aria-checked="false" aria-label="5 stars">★</button>
+          </div>
+
+          <p class="rating-label" id="ratingLabel" aria-live="polite"></p>
+        </section>
+
+        <!-- Generate Button (hidden, reviews auto-generate) -->
+        <button class="btn-generate" id="generateBtn" hidden aria-hidden="true" disabled>
           ✨ Generate My Review
         </button>
 
@@ -154,6 +154,9 @@
           </div>
 
           <div class="action-btns">
+            <button class="btn btn-regen" id="regenBtn" aria-label="Generate a different review">
+              🔄 Try Another
+            </button>
             <button class="btn btn-copy" id="copyBtn" aria-label="Copy review to clipboard">
               📋 Copy Review
             </button>

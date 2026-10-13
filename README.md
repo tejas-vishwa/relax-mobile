@@ -5,8 +5,11 @@ A beautiful, AI-powered review collection page for your mobile repair shop.
 ---
 
 ## ✅ Features
-- **⭐ Interactive 5-star rating** — tap to rate
-- **🤖 AI-generated reviews** — Chrome Gemini Nano → Gemini API → 18 pre-written templates (automatic fallback)
+- **🔧 Repair categories upfront** — 9 repair types visible before reviewing
+- **⭐ Interactive star rating** — tap to rate your experience
+- **⚡ Instant auto-generation** — reviews generate automatically once stars & category are selected
+- **🤖 Multi-tier AI reviews** — Chrome Gemini Nano → Gemini API → category-aware SEO templates
+- **🔄 Regenerate option** — "Try Another" button to easily get alternative review text
 - **📋 Auto-copy** — generated review is copied to clipboard with one click
 - **🗺️ 5-star → Google Maps** — opens your Google Maps review page
 - **🔒 1–4 stars → WhatsApp** — sends private feedback directly to you
